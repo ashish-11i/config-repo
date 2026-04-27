@@ -1,9 +1,6 @@
 server:
   port: 8082
 
-custom:
-  message: Hello from Config Server 🚀
-
 spring:
   application:
     name: order-service
@@ -11,18 +8,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/ms_order_db   # overridden by SPRING_DATASOURCE_URL env var in Docker
     username: postgres
     password: postgres
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: update       # safe default for local IDE run; profiles override this
+    show-sql: false
+    open-in-view: false      # prevent DB connections being held open during HTTP rendering
     properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate: {}          # dialect is auto-detected by Hibernate 6 — do not set explicitly
   config:
-    # import: optional:configserver:http://config-server
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://localhost:8888   # overridden by SPRING_CONFIG_IMPORT in Docker
 
 eureka:
   client:
@@ -50,4 +44,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh
+        include: health,refresh
+
+logging:
+  level:
+    root: INFO
